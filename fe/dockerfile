@@ -1,0 +1,30 @@
+# Gunakan base image Ubuntu
+FROM ubuntu:24.04
+
+# Install Node.js & npm
+RUN apt-get update && \
+    apt-get install -y curl && \
+    curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g http-server && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Tentukan direktori kerja di dalam container
+WORKDIR /usr/src/app
+
+# Copy semua file frontend ke dalam container
+COPY . .
+
+# Install dependencies
+RUN npm install
+
+# Build project Vite (hasil build masuk ke folder dist)
+RUN npm run build
+
+# Expose port (yang akan digunakan untuk container)
+EXPOSE 8080
+
+# Jalankan hasil build menggunakan http-server
+RUN npm install -g serve
+CMD ["serve", "-s", "dist", "-l", "8080"]
+
