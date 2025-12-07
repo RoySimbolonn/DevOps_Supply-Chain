@@ -38,8 +38,8 @@ jobs:
           file: ./be/Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/backend-express:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/backend-express:${{ github.sha }}
+            royjannessimbolon/backend-express:latest
+            royjannessimbolon/backend-express:${{ github.sha }}
 
       # Build dan Push Frontend Image
       - name: Build and Push Frontend Image
@@ -49,12 +49,12 @@ jobs:
           file: ./fe/Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/frontend-vite:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/frontend-vite:${{ github.sha }}
+            royjannessimbolon/frontend-vite:latest
+            royjannessimbolon/frontend-vite:${{ github.sha }}
 
       # Output image tags
       - name: Image digest
         run: |
-          echo "Backend Image: ${{ secrets.DOCKERHUB_USERNAME }}/backend-express:latest"
-          echo "Frontend Image: ${{ secrets.DOCKERHUB_USERNAME }}/frontend-vite:latest"
+          echo "Backend Image: royjannessimbolon/backend-express:latest"
+          echo "Frontend Image: royjannessimbolon/frontend-vite:latest"
           echo "Build SHA: ${{ github.sha }}"
