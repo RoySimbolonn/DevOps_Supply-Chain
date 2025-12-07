@@ -23,13 +23,17 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       
       - name: Build and push backend
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-        run: |
-          docker buildx build --platform linux/amd64 --push -t ${DOCKER_USERNAME}/be:latest ./be
+        uses: docker/build-push-action@v5
+        with:
+          context: ./be
+          platforms: linux/amd64
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/be:latest
       
       - name: Build and push frontend
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-        run: |
-          docker buildx build --platform linux/amd64 --push -t ${DOCKER_USERNAME}/fe:latest ./fe
+        uses: docker/build-push-action@v5
+        with:
+          context: ./fe
+          platforms: linux/amd64
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/fe:latest
