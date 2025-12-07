@@ -40,8 +40,6 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/backend-express:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/backend-express:${{ github.sha }}
-          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/backend-express:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/backend-express:buildcache,mode=max
 
       # Build dan Push Frontend Image
       - name: Build and Push Frontend Image
@@ -53,8 +51,6 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/frontend-vite:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/frontend-vite:${{ github.sha }}
-          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/frontend-vite:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/frontend-vite:buildcache,mode=max
 
       # Output image tags
       - name: Image digest
