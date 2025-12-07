@@ -1,4 +1,4 @@
-name: CI/CD Docker (Multi Images)
+name: CI/CD Docker
 
 on:
   push:
@@ -18,14 +18,18 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+    # ===========================
     # Build & Push Backend
+    # ===========================
     - name: Build backend image
       run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest ./backend
 
     - name: Push backend image
       run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
 
+    # ===========================
     # Build & Push Frontend
+    # ===========================
     - name: Build frontend image
       run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest ./frontend
 
