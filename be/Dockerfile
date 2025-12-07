@@ -23,6 +23,18 @@ RUN npm rebuild bcrypt --build-from-source
 # Generate Prisma
 RUN npx prisma generate
 
+# Accept build arguments
+ARG DATABASE_URL
+ARG JWT_SECRET
+ARG PORT=3000
+
+# Set environment variables from build args
+ENV DATABASE_URL=${DATABASE_URL}
+ENV JWT_SECRET=${JWT_SECRET}
+ENV PORT=${PORT}
+ENV VITE_API_URL=http://localhost:3000
+ENV BASE_URL=http://localhost:3000/api/orders
+
 # Expose port backend
 EXPOSE 3000
 
