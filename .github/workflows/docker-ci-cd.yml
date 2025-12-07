@@ -28,7 +28,7 @@ jobs:
           context: ./be
           platforms: linux/amd64
           push: true
-          tags: roysimbolonn/be:latest
+          tags: royjannessimbolon/be:latest
       
       - name: Build and push frontend
         uses: docker/build-push-action@v5
@@ -36,4 +36,4 @@ jobs:
           context: ./fe
           platforms: linux/amd64
           push: true
-          tags: roysimbolonn/fe:latest
+          tags: royjannessimbolon/fe:latest
