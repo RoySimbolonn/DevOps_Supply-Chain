@@ -18,13 +18,15 @@ COPY . .
 # Install dependencies
 RUN npm install
 
+# Set environment variable SEBELUM build (Vite embed ini saat build)
+ENV VITE_API_URL=http://localhost:3000
+
 # Build project Vite (hasil build masuk ke folder dist)
 RUN npm run build
 
 # Expose port (yang akan digunakan untuk container)
 EXPOSE 8080
 
-# Jalankan hasil build menggunakan http-server
+# Jalankan hasil build menggunakan serve
 RUN npm install -g serve
 CMD ["serve", "-s", "dist", "-l", "8080"]
-
