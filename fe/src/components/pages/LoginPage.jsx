@@ -8,20 +8,6 @@ const LoginPage = () => {
   return (
     <div className="flex h-screen w-screen items-center justify-center bg-BIRU p-4">
       <Card className="h-auto w-96">
-        {/* Banner Auto Update Test */}
-        <div style={{
-          backgroundColor: '#4CAF50',
-          color: 'white',
-          padding: '12px',
-          textAlign: 'center',
-          fontSize: '14px',
-          fontWeight: 'bold',
-          borderTopLeftRadius: '8px',
-          borderTopRightRadius: '8px'
-        }}>
-          🚀 CI/CD Auto Update Works! - v2.0
-        </div>
-        
         <div className="flex justify-center items-center p-4">
           <img
             src={logoZ4IN}
@@ -30,6 +16,13 @@ const LoginPage = () => {
           />
         </div>
         <CardBody className="pt-0">
+          {/* Indikator CI/CD Testing */}
+          <div className="mb-4 rounded-lg bg-green-50 p-3 text-center">
+            <Typography variant="small" className="font-semibold text-green-700">
+              Ini adalah Contoh CI/CD
+            </Typography>
+          </div>
+          
           <LoginForm />
           <Link to={"/register"}>
             <Typography
