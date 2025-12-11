@@ -61,4 +61,11 @@ jobs:
     
     steps:
       - name: Trigger Local Kubernetes Update
-        run: 
+        run: |
+          echo "✅ Images pushed to Docker Hub!"
+          echo "Backend: royjannessimbolon/backend-express:${{ github.sha }}"
+          echo "Frontend: royjannessimbolon/frontend-vite:${{ github.sha }}"
+          echo ""
+          echo "📝 Manual update command (run locally):"
+          echo "kubectl set image deployment/backend-deployment backend=royjannessimbolon/backend-express:${{ github.sha }} -n supply-chain-app"
+          echo "kubectl set image deployment/frontend-deployment frontend=royjannessimbolon/frontend-vite:${{ github.sha }} -n supply-chain-app"
