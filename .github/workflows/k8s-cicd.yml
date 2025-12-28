@@ -52,8 +52,10 @@ jobs:
             ${{ env.DOCKER_USERNAME }}/frontend-vite:${{ steps.vars.outputs.sha }}
 
   deploy:
-    runs-on: self-hosted  # ⭐ PENTING: Gunakan self-hosted runner
+    runs-on: self-hosted
     needs: build-and-push
+    env:
+      KUBECONFIG: C:\k8s-config\config
     
     steps:
       - name: Checkout code
@@ -61,6 +63,7 @@ jobs:
       
       - name: Verify Kubernetes Connection
         run: |
+          Write-Host "KUBECONFIG path: $env:KUBECONFIG"
           kubectl cluster-info
           kubectl get nodes
         shell: powershell
