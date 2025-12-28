@@ -61,24 +61,65 @@ jobs:
         
       - name: Install kubectl
         uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
         
       - name: Configure kubeconfig
         run: |
           mkdir -p $HOME/.kube
           echo "${{ secrets.KUBECONFIG }}" | base64 -d > $HOME/.kube/config
           chmod 600 $HOME/.kube/config
-      
-      - name: Update Images on Kubernetes
+          
+      - name: Verify Kubernetes Connection
         run: |
+          echo "Testing Kubernetes connection..."
+          kubectl cluster-info
+          kubectl get nodes
+          echo "Connection successful!"
+      
+      - name: Create Namespace if not exists
+        run: |
+          kubectl apply -f k8s/namespace.yaml
+          
+      - name: Apply Secrets
+        run: |
+          kubectl apply -f k8s/secrets.yaml
+      
+      - name: Deploy or Update Backend
+        run: |
+          kubectl apply -f k8s/backend-deployment.yaml
+          kubectl apply -f k8s/backend-service.yaml
           kubectl set image deployment/backend-deployment \
             backend=${{ env.DOCKER_USERNAME }}/backend-express:${{ needs.build-and-push.outputs.sha }} \
             -n supply-chain-app
           
+      - name: Deploy or Update Frontend
+        run: |
+          kubectl apply -f k8s/frontend-deployment.yaml
+          kubectl apply -f k8s/frontend-service.yaml
           kubectl set image deployment/frontend-deployment \
             frontend=${{ env.DOCKER_USERNAME }}/frontend-vite:${{ needs.build-and-push.outputs.sha }} \
             -n supply-chain-app
       
+      - name: Apply HPA
+        run: |
+          kubectl apply -f k8s/hpa.yaml
+      
       - name: Verify Rollout
         run: |
-          kubectl rollout status deployment/backend-deployment -n supply-chain-app
-          kubectl rollout status deployment/frontend-deployment -n supply-chain-app
+          echo "Waiting for backend deployment..."
+          kubectl rollout status deployment/backend-deployment -n supply-chain-app --timeout=5m
+          
+          echo "Waiting for frontend deployment..."
+          kubectl rollout status deployment/frontend-deployment -n supply-chain-app --timeout=5m
+          
+      - name: Show Deployment Status
+        run: |
+          echo "=== Pods Status ==="
+          kubectl get pods -n supply-chain-app
+          
+          echo "=== Services ==="
+          kubectl get svc -n supply-chain-app
+          
+          echo "=== Deployments ==="
+          kubectl get deployments -n supply-chain-app
