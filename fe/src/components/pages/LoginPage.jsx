@@ -19,7 +19,7 @@ const LoginPage = () => {
           {/* Indikator CI/CD Testing */}
           <div className="mb-4 rounded-lg bg-green-50 p-3 text-center">
             <Typography variant="small" className="font-semibold text-green-700">
-              Ini adalah Contoh CI/CD ACCACA
+              ✅ CI/CD Successfully Deployed! Version 2.0
             </Typography>
           </div>
           
