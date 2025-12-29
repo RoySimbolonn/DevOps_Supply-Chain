@@ -214,6 +214,13 @@ router.put("/status", adminAuthorization, async (req, res) => {
     const { orderID, status } = req.body;
     const supplierUserID = req.userID;
 
+    console.log("=== UPDATE STATUS REQUEST ===");
+    console.log("Order ID:", orderID);
+    console.log("New Status:", status);
+    console.log("Status Type:", typeof status);
+    console.log("Supplier User ID:", supplierUserID);
+    console.log("============================");
+
     // Update status order
     const updatedOrder = await orderService.updateOrderStatus(
       orderID,

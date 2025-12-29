@@ -79,9 +79,19 @@ class OrderService {
     }
 
     // Validasi status
-    if (!Object.values(StatusRole).includes(status)) {
-      throw new Error("Invalid status");
+    // Validasi status - convert to uppercase for consistency
+    const validStatuses = ["PENDING", "ON_PROGRESS", "SUCCESS", "REJECT"];
+    const normalizedStatus = status ? status.toUpperCase().trim() : "";
+
+    if (!validStatuses.includes(normalizedStatus)) {
+      throw new Error(
+        `Invalid status: "${status}". Valid statuses are: ${validStatuses.join(", ")}`
+      );
     }
+
+    // Use normalized status for consistency
+    status = normalizedStatus;
+
 
     const currentOrder = await this.orderRepository.findById(orderID);
     if (!currentOrder) {
