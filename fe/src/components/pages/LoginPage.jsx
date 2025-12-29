@@ -19,7 +19,7 @@ const LoginPage = () => {
           {/* Indikator CI/CD Testing */}
           <div className="mb-4 rounded-lg bg-green-50 p-3 text-center">
             <Typography variant="small" className="font-semibold text-green-700">
-              Version 2.0 - Updated ✅
+              Version 2.0 - Updated ✅111
             </Typography>
           </div>
           
