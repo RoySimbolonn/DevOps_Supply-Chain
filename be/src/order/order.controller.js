@@ -212,14 +212,40 @@ router.get("/supplier/order/:id", async (req, res) => {
 router.put("/status", adminAuthorization, async (req, res) => {
   try {
     const { orderID, status } = req.body;
-    const supplierUserID = req.userID;
+    
+    // Get supplierUserID - with fallback for safety
+    const supplierUserID = req.userID || req.user?.userID;
 
+    // Detailed logging
     console.log("=== UPDATE STATUS REQUEST ===");
     console.log("Order ID:", orderID);
     console.log("New Status:", status);
-    console.log("Status Type:", typeof status);
-    console.log("Supplier User ID:", supplierUserID);
+    console.log("req.userID:", req.userID);
+    console.log("req.user:", req.user);
+    console.log("supplierUserID (final):", supplierUserID);
     console.log("============================");
+
+    // Validate inputs
+    if (!orderID) {
+      return res.status(400).json({ message: "Order ID is required" });
+    }
+
+    if (!status) {
+      return res.status(400).json({ message: "Status is required" });
+    }
+
+    if (!supplierUserID) {
+      console.error("❌❌❌ CRITICAL: supplierUserID is undefined!");
+      console.error("req object keys:", Object.keys(req));
+      return res.status(500).json({ 
+        message: "Authentication error: User ID not found",
+        debug: {
+          hasUserID: !!req.userID,
+          hasUser: !!req.user,
+          userObject: req.user
+        }
+      });
+    }
 
     // Update status order
     const updatedOrder = await orderService.updateOrderStatus(
