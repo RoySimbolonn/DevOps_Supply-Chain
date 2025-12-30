@@ -48,29 +48,48 @@ const SupplierTableTransaction = () => {
   ];
 
   const handleStatusChange = async (orderID, newStatus) => {
-    setLoading(true);
-    try {
-      await axiosInstance.put(
-        `/api/orders/status`,
-        { orderID, status: newStatus },
-        { headers: { Authorization: `${token}` } },
-      );
+  setLoading(true);
+  try {
+    console.log("🔄 Updating status:", { orderID, newStatus });
+    
+    // Send update request
+    const response = await axiosInstance.put(
+      `/api/orders/status`,
+      { orderID, status: newStatus },
+      { headers: { Authorization: `${token}` } },
+    );
 
-      setOrders((prevOrders) => {
-        const updatedOrders = prevOrders.map((order) => {
-          if (order.orderID === orderID) {
-            return { ...order, status: newStatus };
-          }
-          return order;
-        });
-        return updatedOrders;
+    console.log("✅ Update response:", response.data);
+
+    // Update local state
+    setOrders((prevOrders) => {
+      const updatedOrders = prevOrders.map((order) => {
+        if (order.orderID === orderID) {
+          return { 
+            ...order, 
+            status: newStatus,
+            qr_code: response.data.qrCodePath || order.qr_code // Update QR code jika ada
+          };
+        }
+        return order;
       });
-    } catch (error) {
-      console.error(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+      console.log("✅ Orders updated:", updatedOrders);
+      return updatedOrders;
+    });
+
+    // Optional: Show success message
+    alert(`Status berhasil diubah menjadi ${newStatus}`);
+
+  } catch (error) {
+    console.error("❌ Error updating status:", error);
+    console.error("❌ Error response:", error.response?.data);
+    
+    // Show error message
+    alert(`Gagal mengubah status: ${error.response?.data?.message || error.message}`);
+  } finally {
+    setLoading(false);
+  }
+};
 
   // Hitung total halaman
   const totalPages = Math.ceil(orders.length / itemsPerPage);

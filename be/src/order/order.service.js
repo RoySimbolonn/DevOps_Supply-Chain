@@ -62,100 +62,72 @@ class OrderService {
     };
   }
 
-  async getSupplierOrderHistory(supplierUserID) {
-    return this.orderRepository.findSupplierOrderHistory(supplierUserID);
-  }
-
-  // Update order status
   async updateOrderStatus(orderID, status, supplierUserID) {
-    // Validasi existing code...
-    const isSupplierProduct = await this.orderRepository.checkSupplierProduct(
-      orderID,
-      supplierUserID
-    );
+  // Validasi existing code...
+  const isSupplierProduct = await this.orderRepository.checkSupplierProduct(
+    orderID,
+    supplierUserID
+  );
 
-    if (!isSupplierProduct) {
-      throw new Error("Order not found or unauthorized access");
-    }
+  if (!isSupplierProduct) {
+    throw new Error("Order not found or unauthorized access");
+  }
 
-    // Validasi status
-    // Validasi status - convert to uppercase for consistency
-    const validStatuses = ["PENDING", "ON_PROGRESS", "SUCCESS", "REJECT"];
-    const normalizedStatus = status ? status.toUpperCase().trim() : "";
+  // Validasi status - convert to uppercase for consistency
+  const validStatuses = ["PENDING", "ON_PROGRESS", "SUCCESS", "REJECT"];
+  const normalizedStatus = status ? status.toUpperCase().trim() : "";
 
-    if (!validStatuses.includes(normalizedStatus)) {
-      throw new Error(
-        `Invalid status: "${status}". Valid statuses are: ${validStatuses.join(", ")}`
-      );
-    }
-
-    // Use normalized status for consistency
-    status = normalizedStatus;
-
-
-    const currentOrder = await this.orderRepository.findById(orderID);
-    if (!currentOrder) {
-      throw new Error("Order not found");
-    }
-
-    // Manajemen stok
-    if (
-      status === StatusRole.ON_PROGRESS &&
-      currentOrder.status === StatusRole.PENDING
-    ) {
-      await updateProductStock(
-        currentOrder.productID,
-        currentOrder.quantity,
-        false
-      );
-    } else if (
-      status === StatusRole.REJECT &&
-      currentOrder.status === StatusRole.ON_PROGRESS
-    ) {
-      await updateProductStock(
-        currentOrder.productID,
-        currentOrder.quantity,
-        true
-      );
-    }
-
-    // Generate QR Code
-    let qrCodePath = null;
-    if (status === StatusRole.ON_PROGRESS || status === StatusRole.SUCCESS) {
-      const orderDetailsUrl = `${process.env.BASE_URL}/${orderID}`;
-
-      // Generate QR Code as a buffer
-      const qrCodeBuffer = await QRCode.toBuffer(orderDetailsUrl, {
-        color: {
-          dark: "#000",
-          light: "#FFF",
-        },
-      });
-
-      // Upload to Imgur
-      const response = await axios.post(
-        "https://api.imgur.com/3/image",
-        {
-          image: qrCodeBuffer.toString("base64"),
-          type: "base64",
-        },
-        {
-          headers: {
-            Authorization: `Client-ID ${process.env.IMGUR_CLIENT_ID}`,
-          },
-        }
-      );
-
-      qrCodePath = response.data.data.link; // URL dari gambar yang diupload
-    }
-
-    // Update status dengan path QR code
-    return this.orderRepository.updateStatusWithQRCode(
-      orderID,
-      status,
-      qrCodePath
+  if (!validStatuses.includes(normalizedStatus)) {
+    throw new Error(
+      `Invalid status: "${status}". Valid statuses are: ${validStatuses.join(", ")}`
     );
   }
+
+  // Use normalized status for consistency
+  status = normalizedStatus;
+
+  const currentOrder = await this.orderRepository.findById(orderID);
+  if (!currentOrder) {
+    throw new Error("Order not found");
+  }
+
+  // Manajemen stok - GUNAKAN STRING, BUKAN StatusRole object
+  if (
+    status === "ON_PROGRESS" &&  // ✅ String comparison
+    currentOrder.status === "PENDING"
+  ) {
+    await updateProductStock(
+      currentOrder.productID,
+      currentOrder.quantity,
+      false
+    );
+  } else if (
+    status === "REJECT" &&  // ✅ String comparison
+    currentOrder.status === "ON_PROGRESS"
+  ) {
+    await updateProductStock(
+      currentOrder.productID,
+      currentOrder.quantity,
+      true
+    );
+  }
+
+  // Generate QR Code (TEMPORARILY DISABLED)
+  let qrCodePath = null;
+
+  if (status === "ON_PROGRESS" || status === "SUCCESS") {  // ✅ String comparison
+    // Use placeholder for testing
+    qrCodePath = `https://via.placeholder.com/150?text=Order-${orderID}`;
+    console.log("⚠️ Using placeholder QR code (Imgur disabled for testing)");
+  }
+
+  // Update status dengan path QR code
+  return this.orderRepository.updateStatusWithQRCode(
+    orderID,
+    status,
+    qrCodePath
+  );
+}
 
   // Delete order
   async deleteOrder(orderID, userID) {
