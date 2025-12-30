@@ -113,20 +113,51 @@ class OrderService {
   }
 
   // Generate QR Code (TEMPORARILY DISABLED)
-  let qrCodePath = null;
+  // Generate QR Code - Save locally (no Imgur)
+let qrCodePath = null;
 
-  if (status === "ON_PROGRESS" || status === "SUCCESS") {  // ✅ String comparison
-    // Use placeholder for testing
+if (status === "ON_PROGRESS" || status === "SUCCESS") {
+  try {
+    // Ensure qr-codes directory exists
+    const qrCodesDir = path.join(__dirname, "../public/qr-codes");
+    if (!fs.existsSync(qrCodesDir)) {
+      fs.mkdirSync(qrCodesDir, { recursive: true });
+      console.log("✅ Created qr-codes directory");
+    }
+
+    // Generate unique filename
+    const qrCodeFileName = `order-${orderID}-${Date.now()}.png`;
+    const qrCodeFilePath = path.join(qrCodesDir, qrCodeFileName);
+
+    // Generate QR code URL
+    const orderDetailsUrl = `${process.env.BASE_URL}/${orderID}`;
+
+    // Generate and save QR code to file
+    await QRCode.toFile(qrCodeFilePath, orderDetailsUrl, {
+      color: {
+        dark: "#000",
+        light: "#FFF",
+      },
+      width: 300,
+    });
+
+    // Set relative path for serving
+    qrCodePath = `/qr-codes/${qrCodeFileName}`;
+    
+    console.log(`✅ QR code saved: ${qrCodePath}`);
+  } catch (error) {
+    console.error("❌ QR code generation error:", error);
+    // Fallback to placeholder if QR generation fails
     qrCodePath = `https://via.placeholder.com/150?text=Order-${orderID}`;
-    console.log("⚠️ Using placeholder QR code (Imgur disabled for testing)");
   }
+}
 
-  // Update status dengan path QR code
-  return this.orderRepository.updateStatusWithQRCode(
-    orderID,
-    status,
-    qrCodePath
-  );
+// Update status dengan path QR code
+return this.orderRepository.updateStatusWithQRCode(
+  orderID,
+  status,
+  qrCodePath
+);
 }
 
   // Delete order

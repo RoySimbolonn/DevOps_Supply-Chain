@@ -13,6 +13,7 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use("/qr-codes", express.static(path.join(__dirname, "public/qr-codes")));
 
+
 // Root route
 app.get("/", (req, res) => {
   res.send("Hello World!");
