@@ -236,20 +236,29 @@ const SupplierTableTransaction = () => {
                     />
                   </td>
                   <td className="border-b border-blue-gray-50 p-4">
-                    <div className="flex items-center justify-center">
-                      {order.qr_code ? (
-                        <img src={order.qr_code} alt="" className="h-12 w-12" />
-                      ) : (
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                        >
-                          -
-                        </Typography>
-                      )}
-                    </div>
-                  </td>
+  <div className="flex items-center justify-center">
+    {order.qr_code ? (
+      <img 
+        src={order.qr_code.startsWith('http') 
+          ? order.qr_code 
+          : `http://localhost:3000${order.qr_code}`
+        }
+        alt="QR Code" 
+        className="h-12 w-12 cursor-pointer hover:scale-110 transition-transform" 
+        onClick={() => {
+          const url = order.qr_code.startsWith('http') 
+            ? order.qr_code 
+            : `http://localhost:3000${order.qr_code}`;
+          window.open(url, '_blank');
+        }}
+      />
+    ) : (
+      <Typography variant="small" color="blue-gray" className="font-normal">
+        -
+      </Typography>
+    )}
+  </div>
+</td>
                 </tr>
               ))
             )}
